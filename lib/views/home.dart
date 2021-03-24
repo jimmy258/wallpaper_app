@@ -4,8 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:wallpaper_app/data/data.dart';
 import 'package:wallpaper_app/model/categories_model.dart';
 import 'package:wallpaper_app/model/wallpaper_model.dart';
+import 'package:wallpaper_app/views/category.dart';
+import 'package:wallpaper_app/views/image_view.dart';
 import 'package:wallpaper_app/widget/widget.dart';
 import 'package:http/http.dart' as http;
+import 'package:fluttertoast/fluttertoast.dart';
+import 'search.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -15,6 +19,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   List<CategoriesModel> categories = new List();
   List<WallpaperModel> Wallpapers = new List();
+  TextEditingController searchController = new TextEditingController();
   getTrendingPhotos()async{
     var response =await http.get("https://wallhaven.cc/api/v1/search?sorting=random");
    //print(response.body.toString());
@@ -57,13 +62,26 @@ class _HomeState extends State<Home> {
               child: Row(children: <Widget>[
                 Expanded(
                   child: TextField(
+                    controller: searchController,
                     decoration: InputDecoration(
                       hintText: "search wallpapers",
                       border: InputBorder.none,
                     ),
                   ),
                 ),
-                Icon(Icons.search)
+                GestureDetector(
+                  onTap: (){
+                    Navigator.push(
+                        context, MaterialPageRoute(
+                        builder: (context) => Search(
+                          searchQuery:searchController.text,
+                        )
+                    ));
+                  },
+                  child: Container(
+                      child: Icon(Icons.search)
+                  ),
+                )
               ],),
             ),
             SizedBox(height: 16,),
@@ -81,7 +99,6 @@ class _HomeState extends State<Home> {
                     );
                   }),
             ),
-            SizedBox(height: 16,),
             wallpaperList(Wallpapers:Wallpapers,context: context)
           ],
          ),
@@ -96,23 +113,34 @@ class CategoriesTitle extends StatelessWidget {
 CategoriesTitle({@required this.title,@required this.imgUrl});
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(right: 4),
-      child: Stack(children: <Widget>[
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-              child: Image.network(imgUrl,height: 50,width: 100,fit: BoxFit.cover,)),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            color: Colors.black26,
+    return GestureDetector(
+      onTap: (){
+        Navigator.push(context,
+            MaterialPageRoute(
+                builder:(context)=>
+                    Category(
+                        CategoriesName: title.toLowerCase()
+                    )
+            ));
+      },
+      child: Container(
+        margin: EdgeInsets.only(right: 4),
+        child: Stack(children: <Widget>[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+                child: Image.network(imgUrl,height: 50,width: 100,fit: BoxFit.cover,)),
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: Colors.black26,
+            ),
+            height: 50,
+            width: 100,
+            alignment: Alignment.center,
+            child: Text(title, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500,fontSize: 15),),
           ),
-          height: 50,
-          width: 100,
-          alignment: Alignment.center,
-          child: Text(title, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500,fontSize: 15),),
-        ),
-      ],),
+        ],),
+      ),
     );
   }
 }
