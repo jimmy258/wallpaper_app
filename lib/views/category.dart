@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:wallpaper_app/model/wallpaper_model.dart';
@@ -15,8 +16,8 @@ import 'package:wallpaper_app/widget/widget.dart';
  class _CategoryState extends State<Category> {
    List<WallpaperModel> Wallpapers = new List();
    getSearchPhotos(String query)async{
-     var response =await http.get("https://wallhaven.cc/api/v1/search?query=$query&per_page=24&page=1");
-     //print(response.body.toString());
+     var response =await http.get("https://wallhaven.cc/api/v1/search?query=${widget.CategoriesName}&per_page=24&page=1");
+     //log(response.body.toString());
      Map<String,dynamic> jsonData = jsonDecode(response.body);
      jsonData["data"].forEach((element){
        //print(element);
